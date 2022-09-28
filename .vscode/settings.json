@@ -3,5 +3,6 @@
         "**/bin": true,
         "**/obj": true
     },
-    "omnisharp.enableImportCompletion": true
+    "omnisharp.enableImportCompletion": true,
+    "editor.tabSize": 4
 }
