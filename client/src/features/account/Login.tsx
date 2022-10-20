@@ -1,5 +1,4 @@
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -7,16 +6,27 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Paper } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { FieldValues, useForm } from 'react-hook-form';
-import agent from '../../app/api/agent';
 import { LoadingButton } from '@mui/lab';
+import { useAppDispatch } from '../../app/store/configureStore';
+import { signInUser } from './accountSlice';
 
 export default function Login() {
-    const { register, handleSubmit, formState: { isSubmitting } } = useForm()
+    const history = useHistory()
+    const location = useLocation<any>()
+    const dispatch = useAppDispatch()
+    const { register, handleSubmit, formState: { isSubmitting, errors, isValid } } = useForm({
+        mode: 'all'
+    })
 
     async function submitForm(data: FieldValues) {
-        await agent.Account.login(data)
+        try {
+            await dispatch(signInUser(data))
+            history.push(location.state?.from?.pathname || '/catalog')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -39,7 +49,9 @@ export default function Login() {
                     label="Username"
                     // autoComplete="username"
                     autoFocus
-                    {...register('username')}
+                    {...register('username', { required: 'Username is required' })}
+                    error={!!errors.username}
+                    helperText={errors?.username?.message?.toString()}
                 />
                 <TextField
                     margin="normal"
@@ -48,7 +60,9 @@ export default function Login() {
                     type="password"
                     label="Password"
                     // autoComplete="current-password"
-                    {...register('password')}
+                    {...register('password', { required: 'Password is required' })}
+                    error={!!errors.password}
+                    helperText={errors?.password?.message?.toString()}
                 />
                 {/* <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
@@ -56,6 +70,7 @@ export default function Login() {
                     /> */}
                 <LoadingButton
                     loading={isSubmitting}
+                    disabled={!isValid}
                     type="submit"
                     fullWidth
                     variant="contained"

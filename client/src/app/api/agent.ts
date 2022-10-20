@@ -2,6 +2,7 @@ import { PaginatedResponse } from './../models/pagination';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { history } from "../..";
+import { store } from '../store/configureStore';
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500))
 
@@ -9,6 +10,12 @@ axios.defaults.baseURL = 'http://localhost:5000/api/'
 axios.defaults.withCredentials = true
 
 const responseBody = (response: AxiosResponse) => response.data
+
+axios.interceptors.request.use(config => {
+    const token = store.getState().account.user?.token
+    if (token) config.headers.Authorization = `Bearer ${token}`
+    return config
+})
 
 axios.interceptors.response.use(async response => {
     await sleep()
@@ -52,8 +59,8 @@ axios.interceptors.response.use(async response => {
 
 const requests = {
     get: (url: string, params?: URLSearchParams) => axios.get(url, { params }).then(responseBody),
-    post: (url: string, body: {}) => axios.post(url).then(responseBody),
-    put: (url: string, body: {}) => axios.put(url).then(responseBody),
+    post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
+    put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
     delete: (url: string) => axios.delete(url).then(responseBody),
 }
 
