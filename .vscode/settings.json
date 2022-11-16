@@ -4,5 +4,9 @@
         "**/obj": true
     },
     "omnisharp.enableImportCompletion": true,
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "discord.removeTimestamp": true,
+    "discord.removeDetails": true,
+    "discord.removeLowerDetails": true,
+    "discord.removeRemoteRepository": true
 }

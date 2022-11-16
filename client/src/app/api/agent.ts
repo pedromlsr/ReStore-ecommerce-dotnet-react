@@ -19,7 +19,7 @@ axios.interceptors.request.use(config => {
 
 axios.interceptors.response.use(async response => {
     await sleep()
-    
+
     const pagination = response.headers['pagination']
     if (pagination) {
         response.data = new PaginatedResponse(response.data, JSON.parse(pagination))
@@ -97,12 +97,17 @@ const Orders = {
     create: (values: any) => requests.post('orders', values)
 }
 
+const Payments = {
+    createPaymentIntent: () => requests.post('payments', {})
+}
+
 const agent = {
     Catalog,
     TestErrors,
     Basket,
     Account,
-    Orders
+    Orders,
+    Payments
 }
 
 export default agent
